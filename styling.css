@@ -1,0 +1,42 @@
+:root {
+    --div-height: 25px;
+    --div-width: 150px;
+}
+
+.link {
+    display:inline-block;
+    border-radius: 10px;
+    background: #73AD21;
+    padding: 10px;
+    width: var(--div-width);
+    height: var(--div-height);
+    text-align: center;
+    vertical-align: middle;
+    line-height: var(--div-height);
+    margin-left:20px;
+
+}
+
+div.link :hover {
+    display:inline-block;
+    border-radius: 10px;
+    background: #ad000f;
+    padding: 10px;
+    width: var(--div-width);
+    height: var(--div-height);
+    text-align: center;
+    vertical-align: middle;
+    line-height: var(--div-height);
+    margin-left:-10px;
+    margin-top: -10px;
+}
+
+a {
+    text-decoration: none;
+    decoration: none;
+    color: black;
+    text-decoration: none;
+    decoration: none;
+
+
+}
