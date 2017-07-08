@@ -7,6 +7,9 @@
  */
 require_once("settings.php");
 
+/**
+ * This function will display all children that are taught by the logged in teacher in a table.
+ */
 function teacherDisplayChildren()
 {
     $sql = "SELECT s.parentID AS parentID, s.studentNumber AS studentNumber, s.firstName AS firstName, s.lastName AS lastName, t.username AS teacher, s.present AS present  
@@ -18,6 +21,9 @@ function teacherDisplayChildren()
     }
     echo "<br>Displaying all children at the school in the table below<br>";
     if ($result) {
+        /**
+         * Creates a table with appropriate column headers.
+         */
         echo '<br>
                 <table border = "1">
                     <thead>
@@ -31,15 +37,26 @@ function teacherDisplayChildren()
                         </tr>
                     </thead>';
         $retrieved = false;
+        /**
+         * Iterates through all results of the query and populates a new row in the table.
+         */
         while ($row = mysql_fetch_array($result)) {
             $retrieved = true;
             $isInSchool = $row['present'];
 
+            /**
+             * Checks the value of the "present" variable in the databse. A local present variable has either a
+             * Present or Absent value assigned to it.
+             */
             if ($isInSchool == 0) {
                 $present = "Absent";
             } else {
                 $present = "Present";
             }
+
+            /**
+             * Echoes the data for the student into a new table row.
+             */
             echo "
                     <tr>
                         <td>" . $row['parentID'] . "</td>
@@ -60,6 +77,12 @@ function teacherDisplayChildren()
     }
 }
 
+/**
+ * This function attempts to update the password of the current teacher based on the session varialbe "id".
+ * @param $currentPassword password the teacher typed as their current password
+ * @param $newPwd the password the teacher typed as their desired password
+ * @param $confirmPwd the password the teacher typed confirming their desired password
+ */
 function teacherUpdatePassword($currentPassword, $newPwd, $confirmPwd)
 {
     $teacherID = $_SESSION['id'];
@@ -67,8 +90,18 @@ function teacherUpdatePassword($currentPassword, $newPwd, $confirmPwd)
     $result = mysql_query($sql, conn());
     $row = mysql_fetch_array($result);
     $dbPassword = $row['password'];
+
+    /**
+     * Checks to see if the current password entered by the user matches the password stored in the database
+     */
     if ($dbPassword == $currentPassword) {
+        /**
+         * Checks to see if the new password and the confirm password variables are the same
+         */
         if ($newPwd == $confirmPwd) {
+            /**
+             * Execute update query which changes the password for the current user.
+             */
             $sql = "UPDATE teacher SET password = '" . $newPwd . "' WHERE teacherID = '" . $teacherID . "'";
             $result = mysql_query($sql, conn());
             echo "updated";
@@ -80,6 +113,9 @@ function teacherUpdatePassword($currentPassword, $newPwd, $confirmPwd)
     }
 }
 
+/**
+ * This function displays the courses being taught by the current teacher in a table
+ */
 function showClasses()
 {
     $teacherID = $_SESSION['id'];
@@ -93,7 +129,7 @@ function showClasses()
 }
 
 /**
- *
+ * This function displays the students enrolled in a specific class in table format.
  */
 function listStudentsInClass()
 {
