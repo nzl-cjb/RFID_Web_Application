@@ -119,7 +119,7 @@ echo "Current user: " . $username . "<br>";
          */
         if ($_GET["msg"] == 'classes') {
             /**
-             * Shows
+             * Shows the classes that the current teacher takes
              */
             showClasses();
         }
@@ -134,6 +134,20 @@ echo "Current user: " . $username . "<br>";
          */
         listStudentsInClass();
     }
+
+    if (isset($_GET["student"])) {
+
+        listStudentAttendance($_GET["student"]);
+    }
+
+    if (isset($_GET["attendance"])) {
+        listExcuses($_GET["attendance"]);
+    }
+
+    if (isset($_GET["excuse"])) {
+        submitExcuse($_GET["excuse"]);
+     }
+
     ?>
 </div>
 </body>

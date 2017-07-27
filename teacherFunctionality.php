@@ -124,7 +124,7 @@ function showClasses()
                 WHERE t.teacherID = '" . mysql_real_escape_string($teacherID) . "' AND t.teacherID = c.teacherID";
     $result = mysql_query($sql, conn());
     while ($row = mysql_fetch_array($result)) {
-        echo "<a href = \"home.php?msg=classes&class=" . $row['classCode'] . "\">" . $row['classCode'] . "</a><br>";
+        echo "<a href = \"home.php?class=" . $row['classCode'] . "\">" . $row['classCode'] . "</a><br>";
     }
 }
 
@@ -133,9 +133,38 @@ function showClasses()
  */
 function listStudentsInClass()
 {
-    $sql = "SELECT s.studentID, s.studentNumber AS studentNumber, s.firstName AS firstName, s.lastName AS lastName, c.classCode AS classCode, e.grade AS grade, s.present AS present   
-                FROM student s, enroll e, class c, teacher t
-                WHERE t.teacherID = c.teacherID AND c.classID = e.classID AND e.studentID = s.studentID AND t.username LIKE '" . $_SESSION['username'] . "'";
+    /**
+     * This first query will return the number of students who are currently marked as present in the database.
+     * This number is then printed to the website so that the teacher has a clearer idea of attendance within the class,
+     * particulalry in larger classes.
+     */
+    $sql = "SELECT count(*) as count
+            FROM class c, student s, enroll e
+            WHERE s.studentID = e.studentID AND e.classID = c.classID AND s.present = 1 AND c.classCode = '" . $_GET['class'] ."'";
+    $result = mysql_query($sql, conn()) or die(mysql_error());
+    $row = mysql_fetch_array($result);
+    $studentsPresent = $row['count'];
+    echo "Students Present: " . $studentsPresent . "<br>";
+
+    /**
+     * This query returns the total number of students enrolled in a particular class. This is so that the teacher has a number
+     * to compare the number of students present to. This is also printed to the website.
+     */
+    $sql = "SELECT count(*) as count
+            FROM class c, student s, enroll e
+            WHERE s.studentID = e.studentID AND e.classID = c.classID AND c.classCode = '" . $_GET['class'] ."'";
+    $result = mysql_query($sql, conn()) or die(mysql_error());
+    $row = mysql_fetch_array($result);
+    $totalStudents = $row['count'];
+    echo "Total Students: " . $totalStudents;
+
+    /**
+     * This query gets the details of students and their current "present" status. The results of the query are presented to the user in a table
+     * that lists the student's first and last name, as well as the current course and their present status.
+     */
+    $sql = "SELECT s.studentID AS studentID, s.studentNumber AS studentNumber, s.firstName AS firstName, s.lastName AS lastName, c.classCode AS classCode, s.present AS present   
+                FROM student s, enroll e, class c
+                WHERE c.classID = e.classID AND e.studentID = s.studentID AND c.classCode = '" . $_GET['class'] ."'";
     $result = mysql_query($sql, conn()) or die(mysql_error());
     if ($result) {
         echo '<br>
@@ -146,7 +175,6 @@ function listStudentsInClass()
                             <th>First Name</th>
                             <th>Last Name</th>
                             <th>Course</th>
-                            <th>Grade</th>
                             <th>Present</th>
                         </tr>
                     </thead>';
@@ -162,11 +190,10 @@ function listStudentsInClass()
 
             echo "
                     <tr>
-                        <td>" . $row['studentNumber'] . "</td>
+                        <td><a href=\"home.php?student=" . $row['studentID'] . "\">" . $row['studentNumber'] . "</a></td>
                         <td>" . $row['firstName'] . "</td>
                         <td>" . $row['lastName'] . "</td>
                         <td>" . $row['classCode'] . "</td>
-                        <td>" . $row['grade'] . "</td>
                         <td>" . $present . "</td>
                     </tr>";
         }
